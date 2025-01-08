@@ -1,9 +1,6 @@
-# Admin_Kronos
-Modulo para la administración de usuarios de kronos-v1
-
 # Kronos - Administración de Usuarios
 
-Bienvenido a **Kronos**, una aplicación diseñada para gestionar usuarios dentro de una empresa de software. Esta herramienta proporciona un sistema eficiente y sencillo para administrar perfiles, roles y permisos en la organización.
+Bienvenido al Modulo de "Administración de usuarios", Esta herramienta proporciona un sistema eficiente y sencillo para administrar perfiles, roles y permisos en Kronos.
 
 ## 🛠️ Funcionalidades
 
