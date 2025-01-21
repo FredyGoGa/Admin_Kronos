@@ -1,37 +1,23 @@
 import jsonServerProvider from "ra-data-json-server";
-import { fetchUtils } from 'react-admin';
-
-// const apiUrl = import.meta.env.VITE_JSON_SERVER_URL;
-
-// const httpClient = (url: string, options: any = {}) => {
-//   if (!options.headers) {
-//       options.headers = new Headers({ Accept: 'application/json' });
-//   }
-//   // Add custom headers or other logic here if needed
-//   return fetchUtils.fetchJson(url, options);
-// };
-
-
-// const dataProvider = jsonServerProvider(apiUrl, httpClient);
-
-// export default {
-//     ...dataProvider,
-//     getList: (resource: string, params: any) => {
-//         if (resource === 'users') {
-//             // Custom logic for users if needed
-//         }
-//         return dataProvider.getList(resource, params);
-//     },
-//     getCompanies: (params: any) => {
-//         return httpClient(`${apiUrl}/companies`, {
-//             method: 'GET',
-//             ...params
-//         }).then(({ json }) => ({ data: json, total: json.length }));
-//     },
-//     // Add other custom methods if needed
-// };
+//import { fetchUtils } from 'react-admin';
+import { faker } from '@faker-js/faker';
 
 
 export const dataProvider = jsonServerProvider(
   import.meta.env.VITE_JSON_SERVER_URL,
 );
+
+const generateUsers = (count = 10) => {
+  return Array.from({ length: count }, (_, id) => ({
+    id: id + 1,
+    name: faker.person.fullName(),
+    email: faker.internet.email(),
+    phone: faker.phone.number(),
+    address: faker.location.streetAddress(),
+    city: faker.location.city(),
+    createdAt: faker.date.past().toISOString(),
+  }));
+};
+
+// Exportar como array
+export const users = generateUsers();
