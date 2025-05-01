@@ -3,12 +3,10 @@ import {
   Resource, 
   ListGuesser, 
   EditGuesser, 
-  ShowGuesser,
-  Login,  
+  ShowGuesser,   
 } from "react-admin";
 import { Layout } from "./Layout";
 import authProvider from "./authProvider";
-//import {dataProvider} from "./dataProvider";
 //import { UserList } from "./users";
 import {dataProvider} from "./dataProvider";
 import LoginPage from "./LoginPage";

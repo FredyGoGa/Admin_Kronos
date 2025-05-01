@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+#evita subir arvhivos inecesarios al contenedor
+node_modules
+build
+.dockerignore
+Dockerfile
+nginx.conf
+.git
