@@ -13,6 +13,7 @@ import LoginPage from "./LoginPage";
 
 export const App = () => (
   <Admin
+  
     layout={Layout}
     dataProvider={dataProvider}
     authProvider={authProvider}

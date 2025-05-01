@@ -1,21 +1,36 @@
+import AuthService from './authService';
+
+// Usa la variable de entorno con el prefijo VITE_
+const apiUrl = import.meta.env.VITE_API_URL || 'https://default-api-url.com'; // Obtiene la URL de la API
+console.log('API URL:', apiUrl);
+
+if (!apiUrl) {
+  throw new Error('API URL is not defined. Please set VITE_API_URL in your .env file.');
+}
+
+const authService = new AuthService(apiUrl);
+
 const authProvider = {
-  login: ({ username, password }: { username: string; password: string}) => {
-    if (username === 'admin' && password === 'password') {
-      localStorage.setItem('auth', JSON.stringify({ username }));
+  login: async ({ username, password }: { username: string; password: string }) => {
+    try {
+      await authService.login(username, password);
       return Promise.resolve();
+    } catch (error) {
+      return Promise.reject(error);
     }
-    return Promise.reject();
   },
   logout: () => {
-    localStorage.removeItem('auth');
+    authService.logout();
     return Promise.resolve();
   },
   checkAuth: () => {
-    return localStorage.getItem('auth') ? Promise.resolve() : Promise.reject();
+    return authService.isAuthenticated()
+      ? Promise.resolve()
+      : Promise.reject(new Error('Not authenticated'));
   },
   checkError: (error: { status: number }) => {
     if (error.status === 401 || error.status === 403) {
-      localStorage.removeItem('auth');
+      authService.logout();
       return Promise.reject();
     }
     return Promise.resolve();
