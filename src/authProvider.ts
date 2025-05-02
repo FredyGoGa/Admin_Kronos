@@ -12,25 +12,31 @@ const authService = new AuthService(apiUrl);
 
 const authProvider = {
   login: async ({ username, password }: { username: string; password: string }) => {
-    try {
-      await authService.login(username, password);
-      return Promise.resolve();
-    } catch (error) {
-      return Promise.reject(error);
+    const request = new Request(`${apiUrl}/login`, {
+      method: 'POST',
+      body: JSON.stringify({ username, password }),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    });
+    const response = await fetch(request);
+    if (!response.ok) {
+      throw new Error('Login failed');
     }
+    const { token } = await response.json();
+    localStorage.setItem('authToken', token); // Guarda el token en localStorage
+    return Promise.resolve();
   },
   logout: () => {
-    authService.logout();
+    localStorage.removeItem('authToken'); // Elimina el token al cerrar sesión
     return Promise.resolve();
   },
   checkAuth: () => {
-    return authService.isAuthenticated()
+    return localStorage.getItem('authToken')
       ? Promise.resolve()
       : Promise.reject(new Error('Not authenticated'));
   },
   checkError: (error: { status: number }) => {
     if (error.status === 401 || error.status === 403) {
-      authService.logout();
+      localStorage.removeItem('authToken');
       return Promise.reject();
     }
     return Promise.resolve();

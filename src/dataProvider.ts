@@ -3,7 +3,17 @@ import jsonServerProvider from 'ra-data-json-server';
 import { log } from 'console';
 
 const apiUrl = import.meta.env.VITE_API_URL || 'https://dev-api.enrut.info'; // URL base de la API
-const httpClient = fetchUtils.fetchJson;
+// const httpClient = fetchUtils.fetchJson;
+const httpClient = (url: string, options: any = {}) => {
+  const token = localStorage.getItem('authToken'); // Obtén el token del almacenamiento local
+  if (!options.headers) {
+    options.headers = new Headers({ Accept: 'application/json' });
+  }
+  if (token) {
+    options.headers.set('Authorization', `Bearer ${token}`); // Agrega el token al encabezado
+  }
+  return fetchUtils.fetchJson(url, options);
+};
 
 const dataProvider = jsonServerProvider(apiUrl, httpClient);
 
