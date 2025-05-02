@@ -1,67 +1,65 @@
-import jsonServerProvider from "ra-data-json-server";
 import { fetchUtils } from 'react-admin';
-import { faker } from '@faker-js/faker';
+import jsonServerProvider from 'ra-data-json-server';
+import { log } from 'console';
 
-const apiUrl = import.meta.env.VITE_JSON_SERVER_URL;
-const jsonPlaceholderUrl = 'https://jsonplaceholder.typicode.com';
-
+const apiUrl = import.meta.env.VITE_API_URL || 'https://dev-api.enrut.info'; // URL base de la API
 const httpClient = fetchUtils.fetchJson;
 
 const dataProvider = jsonServerProvider(apiUrl, httpClient);
 
-const generateUsers = (count = 10) => {
-  return Array.from({ length: count }, (_, id) => ({
-    id: id + 1,
-    name: faker.person.fullName(),
-    email: faker.internet.email(),
-    phone: faker.phone.number(),
-    address: faker.location.streetAddress(),
-    city: faker.location.city(),
-    createdAt: faker.date.past().toISOString(),
-  }));
-};
-const users = generateUsers(50); 
-
 const customDataProvider = {
   ...dataProvider,
   getList: async (resource: string, params: any) => {
-    if (resource === 'compañias') {
-      return httpClient(`${jsonPlaceholderUrl}/users`).then(({ json }) => ({
-        data: json,
+    if (resource === 'companies') {
+      const url = `${apiUrl}/companies`;
+      const { json } = await httpClient(url);
+      return {
+        data: json,// Ajusta según la estructura de tu API
         total: json.length,
-      }));
-    }
-    if (resource === 'users') {
-      return Promise.resolve({
-        data: users,
-        total: users.length,
-      });
+      };
     }
     return dataProvider.getList(resource, params);
   },
-  getOne: (resource: string, params: any) => {
-    if (resource === 'compañias') {
-      return httpClient(`${jsonPlaceholderUrl}/users/${params.id}`).then(({ json }) => ({
-        data: json,
-      }));
-    }
-    if (resource === 'users') {
-      const user = users.find(user => user.id === params.id);
-      if (user) {
-        return Promise.resolve({
-          data: user,
-        });
-      }
-      return Promise.reject('Usuario no encontrado');
+  getOne: async (resource: string, params: any) => {
+    if (resource === 'companies') {
+      const url = `${apiUrl}/companies/${params.id}`;
+      const { json } = await httpClient(url);
+      return { data: json };
     }
     return dataProvider.getOne(resource, params);
   },
-  // Implementar otros métodos si es necesario
+  create: async (resource: string, params: any) => {
+    if (resource === 'companies') {
+      const url = `${apiUrl}/companies`;
+      const { json } = await httpClient(url, {
+        method: 'POST',
+        body: JSON.stringify(params.data),
+      });
+      return { data: { ...params.data, id: json.id } };
+    }
+    return dataProvider.create(resource, params);
+  },
+  update: async (resource: string, params: any) => {
+    if (resource === 'companies') {
+      const url = `${apiUrl}/companies/${params.id}`;
+      const { json } = await httpClient(url, {
+        method: 'PUT',
+        body: JSON.stringify(params.data),
+      });
+      return { data: json };
+    }
+    return dataProvider.update(resource, params);
+  },
+  delete: async (resource: string, params: any) => {
+    if (resource === 'companies') {
+      const url = `${apiUrl}/companies/${params.id}`;
+      const { json } = await httpClient(url, {
+        method: 'DELETE',
+      });
+      return { data: json };
+    }
+    return dataProvider.delete(resource, params);
+  },
 };
 
 export { customDataProvider as dataProvider };
-
-
-
-// Exportar como array
-//export const users = generateUsers();

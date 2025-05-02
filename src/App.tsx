@@ -35,7 +35,7 @@ export const App = () => (
      
     />
      <Resource
-      name="Compañias"
+      name="companies"
       list={ListGuesser}
       edit={EditGuesser}
       show={ShowGuesser}
