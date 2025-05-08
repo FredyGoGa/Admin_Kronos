@@ -1,4 +1,4 @@
-import AuthService from './authService';
+//import AuthService from './authService';
 
 // Usa la variable de entorno con el prefijo VITE_
 const apiUrl = import.meta.env.VITE_API_URL || 'https://default-api-url.com'; // Obtiene la URL de la API
@@ -8,7 +8,7 @@ if (!apiUrl) {
   throw new Error('API URL is not defined. Please set VITE_API_URL in your .env file.');
 }
 
-const authService = new AuthService(apiUrl);
+//const authService = new AuthService(apiUrl);
 
 const authProvider = {
   login: async ({ username, password }: { username: string; password: string }) => {
@@ -17,13 +17,30 @@ const authProvider = {
       body: JSON.stringify({ username, password }),
       headers: new Headers({ 'Content-Type': 'application/json' }),
     });
+  
     const response = await fetch(request);
+    console.log('Respuesta completa:', response);
+  
     if (!response.ok) {
       throw new Error('Login failed');
     }
-    const { token } = await response.json();
-    localStorage.setItem('authToken', token); // Guarda el token en localStorage
-    return Promise.resolve();
+  
+    try {
+      const responseData = await response.json();
+      console.log('Datos de la respuesta:', responseData);
+  
+      const { idToken  } = responseData; // Ajusta según el formato de la respuesta
+      if (!idToken ) {
+        throw new Error('Token no encontrado en la respuesta');
+      }
+  
+      localStorage.setItem('authToken', idToken );
+      console.log('Token:', idToken);
+      return Promise.resolve();
+    } catch (error) {
+      console.error('Error al procesar la respuesta:', error);
+      throw new Error('Error al procesar la respuesta del servidor');
+    }
   },
   logout: () => {
     localStorage.removeItem('authToken'); // Elimina el token al cerrar sesión
