@@ -10,6 +10,7 @@ import authProvider from "./authProvider";
 //import { UserList } from "./users";
 import {dataProvider} from "./dataProvider";
 import LoginPage from "./LoginPage";
+import { RoutesList } from "./routes/RoutesList";
 
 export const App = () => (
   <Admin
@@ -20,7 +21,7 @@ export const App = () => (
     loginPage={LoginPage}
   >
     <Resource
-      name="Administradores"
+      name="Administrator"
       list={ListGuesser}
       edit={EditGuesser}
       show={ShowGuesser}
@@ -28,7 +29,7 @@ export const App = () => (
      
     />
     <Resource
-      name="Users"
+      name="Drivers"
       list={ListGuesser}
       edit={EditGuesser}
       show={ShowGuesser}
@@ -41,12 +42,11 @@ export const App = () => (
       show={ShowGuesser}
      
     />
-     <Resource
-      name="Usuarios"
-      list={ListGuesser}
+   <Resource
+      name="routes"
+      list={ListGuesser}     
       edit={EditGuesser}
-      show={ShowGuesser}
-   
+      show={ShowGuesser} // Usa el componente personalizado para listar rutas
     />
   </Admin>
 );
