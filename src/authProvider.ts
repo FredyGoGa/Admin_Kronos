@@ -1,5 +1,3 @@
-//import AuthService from './authService';
-
 // Usa la variable de entorno con el prefijo VITE_
 const apiUrl = import.meta.env.VITE_API_URL || 'https://default-api-url.com'; // Obtiene la URL de la API
 console.log('API URL:', apiUrl);
@@ -7,8 +5,6 @@ console.log('API URL:', apiUrl);
 if (!apiUrl) {
   throw new Error('API URL is not defined. Please set VITE_API_URL in your .env file.');
 }
-
-//const authService = new AuthService(apiUrl);
 
 const authProvider = {
   login: async ({ username, password }: { username: string; password: string }) => {
@@ -19,8 +15,7 @@ const authProvider = {
     });
   
     const response = await fetch(request);
-    console.log('Respuesta completa:', response);
-  
+    console.log('Respuesta completa:', response);  
     if (!response.ok) {
       throw new Error('Login failed');
     }

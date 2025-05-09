@@ -5,13 +5,14 @@ import { log } from 'console';
 const apiUrl = import.meta.env.VITE_API_URL || 'https://dev-api.enrut.info'; // URL base de la API
 // const httpClient = fetchUtils.fetchJson;
 const httpClient = (url: string, options: any = {}) => {
-  const token = localStorage.getItem('authToken'); // Obtén el token del almacenamiento local
+  const idToken = localStorage.getItem('authToken'); // Obtén el token del almacenamiento local
   if (!options.headers) {
     options.headers = new Headers({ Accept: 'application/json' });
   }
-  if (token) {
-    options.headers.set('Authorization', `Bearer ${token}`); // Agrega el token al encabezado
+  if (idToken) {
+    options.headers.set('Authorization', `Bearer ${idToken}`); // Agrega el token al encabezado
   }
+   console.log('Encabezados enviados:', options.headers);
   return fetchUtils.fetchJson(url, options);
 };
 
@@ -25,6 +26,24 @@ const customDataProvider = {
       const { json } = await httpClient(url);
       return {
         data: json,// Ajusta según la estructura de tu API
+        total: json.length,
+      };
+    }
+    if (resource === 'routes') {
+ 
+      const url = `${apiUrl}/routes`;
+      const { json } = await httpClient(url);
+
+      return {
+        data: json,
+        total: json.length,
+      };
+    }
+    if (resource === 'drivers') {
+      const url = `${apiUrl}/companies/{companyId}/drivers`;
+      const { json } = await httpClient(url);
+      return {
+        data: json,
         total: json.length,
       };
     }
@@ -50,26 +69,15 @@ const customDataProvider = {
     return dataProvider.create(resource, params);
   },
   update: async (resource: string, params: any) => {
-    if (resource === 'companies') {
-      const url = `${apiUrl}/companies/${params.id}`;
+    if (resource === 'routes') {
+      const url = `${apiUrl}/routes/${params.id}`;
       const { json } = await httpClient(url, {
-        method: 'PUT',
+        method: 'PUT', // Cambia a PATCH si tu API lo requiere
         body: JSON.stringify(params.data),
       });
       return { data: json };
     }
     return dataProvider.update(resource, params);
-  },
-  delete: async (resource: string, params: any) => {
-    if (resource === 'companies') {
-      const url = `${apiUrl}/companies/${params.id}`;
-      const { json } = await httpClient(url, {
-        method: 'DELETE',
-      });
-      return { data: json };
-    }
-    return dataProvider.delete(resource, params);
-  },
+  },  
 };
-
 export { customDataProvider as dataProvider };
