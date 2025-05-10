@@ -10,7 +10,6 @@ import authProvider from "./authProvider";
 //import { UserList } from "./users";
 import {dataProvider} from "./dataProvider";
 import LoginPage from "./LoginPage";
-import { RoutesList } from "./routes/RoutesList";
 
 export const App = () => (
   <Admin
