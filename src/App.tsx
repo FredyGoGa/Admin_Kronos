@@ -7,7 +7,7 @@ import {
 } from "react-admin";
 import { Layout } from "./Layout";
 import authProvider from "./authProvider";
-//import { UserList } from "./users";
+import { CompaniesShow } from './components/companies/CompaniesShow';
 import {dataProvider} from "./dataProvider";
 import LoginPage from "./LoginPage";
 
@@ -32,7 +32,7 @@ export const App = () => (
       name="companies"
       list={ListGuesser}
       edit={EditGuesser}
-      show={ShowGuesser}
+      show={CompaniesShow}
      
     />
    <Resource
