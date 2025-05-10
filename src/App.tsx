@@ -28,13 +28,7 @@ export const App = () => (
 
      
     />
-    <Resource
-      name="Drivers"
-      list={ListGuesser}
-      edit={EditGuesser}
-      show={ShowGuesser}
-     
-    />
+
      <Resource
       name="companies"
       list={ListGuesser}
