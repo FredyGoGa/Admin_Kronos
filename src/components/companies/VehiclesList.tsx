@@ -24,7 +24,7 @@ const VehiclesList = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]); // Estado para almacenar los vehículos
   const [loading, setLoading] = useState(true); // Estado para manejar la carga
   const [error, setError] = useState<string | null>(null); // Estado para manejar errores
-
+  const [selected, setSelected] = useState<Vehicle | null>(null);
   useEffect(() => {
     if (!record) return;
 
@@ -85,21 +85,53 @@ const VehiclesList = () => {
   }
 
   return (
-    <ul>
-      {vehicles.map((vehicle) => (
-        <li key={vehicle.id}>
-          <strong>Placa:</strong> {vehicle.id} | <strong>Número:</strong> {vehicle.number} |{' '}
-          <strong>Estado:</strong> {vehicle.status} | <strong>Ruta:</strong> {vehicle.routeId} |{' '}
-          <strong>Progreso:</strong> {vehicle.tripProgress}% | <strong>Latitud:</strong>{' '}
-          {vehicle.lastPosition.latitude} | <strong>Longitud:</strong>{' '}
-          {vehicle.lastPosition.longitude} | <strong>Velocidad:</strong> {vehicle.lastPosition.speed} km/h |{' '}
-          <strong>Altitud:</strong> {vehicle.lastPosition.altitude} m |{' '}
-          <strong>Precisión:</strong> {vehicle.lastPosition.accuracy} m |{' '}
-          <strong>Última Actualización:</strong> {vehicle.lastPosition.timestamp} |{' '}
-          <strong>Creado:</strong> {vehicle.created} | <strong>Actualizado:</strong> {vehicle.updated}
-        </li>
-      ))}
-    </ul>
+    <div>
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <thead>
+          <tr>
+            <th style={{ border: '1px solid #ccc' }}>Placa</th>
+            <th style={{ border: '1px solid #ccc' }}>Número</th>
+            <th style={{ border: '1px solid #ccc' }}>Estado</th>
+            <th style={{ border: '1px solid #ccc' }}>Ruta</th>
+            <th style={{ border: '1px solid #ccc' }}>Progreso</th>
+            <th style={{ border: '1px solid #ccc' }}>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {vehicles.map((vehicle) => (
+            <tr key={vehicle.id}>
+              <td style={{ border: '1px solid #ccc' }}>{vehicle.id}</td>
+              <td style={{ border: '1px solid #ccc' }}>{vehicle.number}</td>
+              <td style={{ border: '1px solid #ccc' }}>{vehicle.status}</td>
+              <td style={{ border: '1px solid #ccc' }}>{vehicle.routeId}</td>
+              <td style={{ border: '1px solid #ccc' }}>{vehicle.tripProgress}%</td>
+              <td style={{ border: '1px solid #ccc' }}>
+                <button onClick={() => setSelected(vehicle)}>Ver detalles</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {selected && (
+        <div style={{ marginTop: 24, padding: 16, border: '1px solid #1976d2', borderRadius: 8, background: '#f5faff' }}>
+          <h3>Detalles del vehículo: {selected.id}</h3>
+          <p><strong>Número:</strong> {selected.number}</p>
+          <p><strong>Estado:</strong> {selected.status}</p>
+          <p><strong>Ruta:</strong> {selected.routeId}</p>
+          <p><strong>Progreso:</strong> {selected.tripProgress}%</p>
+          <p><strong>Latitud:</strong> {selected.lastPosition.latitude}</p>
+          <p><strong>Longitud:</strong> {selected.lastPosition.longitude}</p>
+          <p><strong>Velocidad:</strong> {selected.lastPosition.speed} km/h</p>
+          <p><strong>Altitud:</strong> {selected.lastPosition.altitude} m</p>
+          <p><strong>Precisión:</strong> {selected.lastPosition.accuracy} m</p>
+          <p><strong>Última Actualización:</strong> {selected.lastPosition.timestamp}</p>
+          <p><strong>Creado:</strong> {selected.created}</p>
+          <p><strong>Actualizado:</strong> {selected.updated}</p>
+          <button onClick={() => setSelected(null)} style={{ marginTop: 8 }}>Cerrar</button>
+        </div>
+      )}
+    </div>
   );
 };
 
