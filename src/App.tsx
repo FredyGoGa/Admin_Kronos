@@ -10,6 +10,8 @@ import authProvider from "./authProvider";
 import { CompaniesShow } from './components/companies/CompaniesShow';
 import {dataProvider} from "./dataProvider";
 import LoginPage from "./LoginPage";
+import VehiclesList from './components/companies/VehiclesList';
+import VehicleShow from './components/companies/VehicleShow';
 
 export const App = () => (
   <Admin
@@ -35,6 +37,11 @@ export const App = () => (
       show={CompaniesShow}
      
     />
+     {/* <Resource
+      name="vehicles"
+      list={VehiclesList}
+      show={VehicleShow}
+    />  */}
    <Resource
       name="routes"
       list={ListGuesser}     

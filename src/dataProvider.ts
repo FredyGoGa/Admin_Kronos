@@ -1,85 +1,87 @@
 import { fetchUtils } from 'react-admin';
-import  {companiesProvider} from './providers/companiesProvider';
-import  {routesProvider} from './providers/routesProvider';
+import { companiesProvider } from './providers/companiesProvider';
+import { routesProvider } from './providers/routesProvider';
 import { vehiclesProvider } from './providers/vehiclesProvider';
 
-const customDataProvider = {
-  getList: async (resource: string, params: any) => {
-    console.log('Recurso solicitado:', resource); // Depuración
-    console.log('Parámetros:', params); // Depuración
-    if (resource === 'companies') return companiesProvider.getList(params);
-    if (resource === 'vehicles'){
-      const { companyId } = params.filter;
-      console.log('Filtro companyId:', companyId); // Depuración
-      if (!companyId) {
-        throw new Error('El filtro companyId es obligatorio para obtener los vehículos.');
-      }
-      const url = `https://dev-api.enrut.info/companies/${companyId}/vehicles`;
-      const { json } = await fetchUtils.fetchJson(url);
-      console.log('Respuesta del servidor:', json); // Depuración
-      return {
-        data: json,
-        total: json.length,
-      };
-  }    
-        if (resource === 'routes') {
-    return routesProvider.getList(params);
+const apiUrl = 'https://dev-api.enrut.info';
+
+const httpClient = (url: string, options: RequestInit = {}) => {
+  if (!options.headers) {
+    options.headers = new Headers({ Accept: 'application/json' });
   }
-  throw new Error(`No provider found for resource: ${resource}`);
-   
-  },
-  getOne: async (resource: string, params: any) => {
-    if (resource === 'companies') return companiesProvider.getOne(params.id);
-    if (resource === 'vehicles') return vehiclesProvider.getOne(params);
-    if (resource === 'routes') return routesProvider.getOne(params.id);
-    
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    (options.headers as Headers).set('Authorization', `Bearer ${token}`);
+  }
+  return fetchUtils.fetchJson(url, options);
+};
+
+interface GetListParams {
+  pagination?: { page: number; perPage: number };
+  sort?: { field: string; order: string };
+  filter?: Record<string, any>;
+}
+
+const customDataProvider = {
+  getList: async (resource: string, params: GetListParams) => {
+    if (resource === 'companies') return companiesProvider.getList(params);
+    if (resource === 'vehicles') {
+      const { companyId } = params.filter || {};
+      let url;
+      if (companyId) {
+        url = `${apiUrl}/companies/${companyId}/vehicles`;
+      } else {
+        url = `${apiUrl}/vehicles`; // endpoint general
+      }
+      const { json } = await httpClient(url);
+
+      // Asegura que siempre sea un array
+      let data: any[] = [];
+      if (Array.isArray(json)) {
+        data = json;
+      } else if (json && typeof json === 'object') {
+        // Si el backend devuelve un objeto único, lo convertimos en array
+        data = [json];
+      }
+
+      return {
+        data,
+        total: data.length,
+      };
+    }
+    if (resource === 'routes') {
+      return routesProvider.getList(params);
+    }
     throw new Error(`No provider found for resource: ${resource}`);
   },
-  create: async (resource: string, params: any) => {
-    if (resource === 'companies') return companiesProvider.create(params.data);
-    if (resource === 'vehicles') return vehiclesProvider.create(params);
-    if (resource === 'routes') return routesProvider.create(params.data);
-    
-    throw new Error(`No provider found for resource: ${resource}`);
+  getOne: async (resource: string, params: { id: string }) => {
+    if (resource === 'vehicles') {
+      // Busca el vehículo por ID en el endpoint general
+      const companyId = ""
+      const vehicleId = ""
+      const url = `${apiUrl}/companies/${companyId}/vehicles/${vehicleId}`;
+      const { json } = await httpClient(url);
+      return { data: json };
+    }
+    if (resource === 'companies') {
+      const url = `${apiUrl}/companies/${params.id}`;
+      const { json } = await httpClient(url);
+      return { data: json };
+    }
+    if (resource === 'routes') {
+      const url = `${apiUrl}/routes/${params.id}`;
+      const { json } = await httpClient(url);
+      return { data: json };
+    }
+    return Promise.reject("Not implemented");
   },
-  update: async (resource: string, params: any) => {
-    if (resource === 'companies') return companiesProvider.update(params.id, params.data);
-    //if (resource === 'vehicles') return vehiclesProvider.update(params);
-    if (resource === 'routes') return routesProvider.update(params.id, params.data);
-    
-    throw new Error(`No provider found for resource: ${resource}`);
-  },
-  getMany: async (resource: string, params: any) => {
-    // Implementation for getMany
-    if (resource === 'companies') return companiesProvider.getMany(params.id, params.data);
-    //if (resource === 'vehicles') return vehiclesProvider.update(params);
-    if (resource === 'routes') return routesProvider.update(params.id, params.data);
-    return { data: [] };
-  },
-  getManyReference: async (resource: string, params: any) => {
-    // Implementation for getManyReference
-    if (resource === 'companies') return companiesProvider.update(params.id, params.data);
-    if (resource === 'routes') return routesProvider.update(params.id, params.data);
-    return { data: [], total: 0 };
-  },
-  updateMany: async (resource: string, params: any) => {
-    // Implementation for updateMany
-    if (resource === 'companies') return companiesProvider.update(params.id, params.data);
-    if (resource === 'routes') return routesProvider.update(params.id, params.data);
-    return { data: [] };
-  },
-  delete: async (resource: string, params: any) => {
-    // Implementation for delete
-    if (resource === 'companies') return companiesProvider.update(params.id, params.data);
-    if (resource === 'routes') return routesProvider.update(params.id, params.data);
-    return { data: {} };
-  },
-  deleteMany: async (resource: string, params: any) => {
-    // Implementation for deleteMany
-    if (resource === 'companies') return companiesProvider.update(params.id, params.data);
-    if (resource === 'routes') return routesProvider.update(params.id, params.data);
-    return { data: [] };
-  },
+  getMany: (resource: string, params: any) => Promise.reject("Not implemented"),
+  getManyReference: (resource: string, params: any) => Promise.reject("Not implemented"),
+  update: (resource: string, params: any) => Promise.reject("Not implemented"),
+  updateMany: (resource: string, params: any) => Promise.reject("Not implemented"),
+  create: (resource: string, params: any) => Promise.reject("Not implemented"),
+  delete: (resource: string, params: any) => Promise.reject("Not implemented"),
+  deleteMany: (resource: string, params: any) => Promise.reject("Not implemented"),
 };
 
 export { customDataProvider as dataProvider };
