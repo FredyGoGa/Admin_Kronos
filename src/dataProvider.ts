@@ -75,8 +75,30 @@ const customDataProvider = {
     }
     return Promise.reject("Not implemented");
   },
+getManyReference: async (
+  resource: string,
+  params: { target: string; id: string; [key: string]: any }
+) => {
+  if (resource === 'vehicles') {
+    // params.target será "companyId", params.id será el id de la compañía
+    const url = `${apiUrl}/companies/${params.id}/vehicles`;
+    const { json } = await httpClient(url);
+
+    let data: any[] = [];
+    if (Array.isArray(json)) {
+      data = json;
+    } else if (json && typeof json === 'object') {
+      data = [json];
+    }
+
+    return {
+      data,
+      total: data.length,
+    };
+  }
+  return Promise.reject("Not implemented");
+},
   getMany: (resource: string, params: any) => Promise.reject("Not implemented"),
-  getManyReference: (resource: string, params: any) => Promise.reject("Not implemented"),
   update: (resource: string, params: any) => Promise.reject("Not implemented"),
   updateMany: (resource: string, params: any) => Promise.reject("Not implemented"),
   create: (resource: string, params: any) => Promise.reject("Not implemented"),
